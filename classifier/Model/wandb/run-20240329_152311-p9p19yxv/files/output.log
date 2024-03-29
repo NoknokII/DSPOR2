@@ -1,0 +1,33 @@
+
+[34m[1mtrain: [39m[22mScanning C:\Studium\Semester5\DSPRO2\DSPOR2\classifier\Model\datasets\coco128\labels\train2017... 126 images, 2 backgrounds, 0 corrupt: 100%|██████████| 128/128 [00:00<00:00, 510.39it/s]
+[34m[1mval: [39m[22mScanning C:\Studium\Semester5\DSPRO2\DSPOR2\classifier\Model\datasets\coco128\labels\train2017.cache... 126 images, 2 backgrounds, 0 corrupt: 100%|██████████| 128/128 [00:00<?, ?it/s]
+
+
+
+        1/5      2.67G      1.214      1.669       1.27        217        640: 100%|██████████| 8/8 [00:10<00:00,  1.32s/it]
+
+
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 4/4 [00:03<00:00,  1.11it/s]
+wandb: WARNING Image: C:\Studium\Semester5\DSPRO2\DSPOR2\classifier\Model\datasets\coco128\images\train2017\000000000508.jpg has no bounding boxes labels
+
+
+        2/5      2.58G      1.201      1.438       1.23        218        640: 100%|██████████| 8/8 [00:08<00:00,  1.05s/it]
+
+
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 4/4 [00:03<00:00,  1.12it/s]
+wandb: WARNING Image: C:\Studium\Semester5\DSPRO2\DSPOR2\classifier\Model\datasets\coco128\images\train2017\000000000250.jpg has no bounding boxes labels
+
+        3/5      2.81G       1.16      1.386      1.254        215        640: 100%|██████████| 8/8 [00:07<00:00,  1.03it/s]
+
+
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 4/4 [00:03<00:00,  1.24it/s]
+
+        4/5      2.56G      1.141      1.384        1.2        148        640: 100%|██████████| 8/8 [00:07<00:00,  1.01it/s]
+
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 4/4 [00:03<00:00,  1.19it/s]
+
+        5/5       2.6G       1.13      1.292      1.209        240        640: 100%|██████████| 8/8 [00:07<00:00,  1.02it/s]
+
+
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 4/4 [00:03<00:00,  1.19it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 4/4 [00:03<00:00,  1.17it/s]

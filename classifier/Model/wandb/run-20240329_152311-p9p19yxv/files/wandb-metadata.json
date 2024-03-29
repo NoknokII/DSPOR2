@@ -1,0 +1,52 @@
+{
+    "os": "Windows-10-10.0.22631-SP0",
+    "python": "3.10.11",
+    "heartbeatAt": "2024-03-29T14:23:12.155889",
+    "startedAt": "2024-03-29T14:23:11.499291",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "Model/test.ipynb",
+    "codePathLocal": null,
+    "root": "C:/Studium/Semester5/DSPRO2/DSPOR2",
+    "git": {
+        "remote": "https://github.com/NoknokII/DSPOR2.git",
+        "commit": "5079aab08a1e285cc9703d09844b20998432e0d7"
+    },
+    "email": "lars.kehrle@stud.hslu.ch",
+    "host": "DESKTOP-TVFQ5U2",
+    "username": "sral0",
+    "executable": "C:\\Studium\\Semester5\\DSPRO2\\venv2\\Scripts\\python.exe",
+    "cpu_count": 8,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 1990.0,
+        "min": 0.0,
+        "max": 3201.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1990.0,
+            "min": 0.0,
+            "max": 3201.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 921.7792930603027,
+            "used": 649.5018463134766
+        }
+    },
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+            "memory_total": 6442450944
+        }
+    ],
+    "memory": {
+        "total": 15.371395111083984
+    }
+}
