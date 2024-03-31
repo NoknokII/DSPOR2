@@ -45,7 +45,9 @@ class ImageGenerator:
 
         image = self.add_noise(image, random.randint(0, self.maximum_noise_level) / 300)
 
-        image.save(self.output_folder+"/"+text+".tiff")
+        image = image.convert("1")
+
+        image.save(self.output_folder+"/"+text+".tiff", compression="group4")
 
     def initialize_dictionary(self):
         #Dictionary source: https://github.com/hbenbel/French-Dictionary/tree/master
@@ -60,7 +62,7 @@ class ImageGenerator:
         self.words_without_diacritics = [word for word in fr_dict if not contains_diacritics(word)]
 
 
-        #TODO set image settings, define bounding boxes
+        #TODO define bounding boxes
 
     def add_noise(self, image, noise_factor ):
         width, height = image.size
