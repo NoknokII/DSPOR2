@@ -56,7 +56,7 @@ class ImageGenerator:
             fr_dict = [word[0] for word in csv.reader(file)]
 
         def contains_diacritics(word):
-            return any(accent in word for accent in ['è', 'é', 'ê'])
+            return any(accent in word for accent in  ['á', 'à', 'â', 'é', 'è', 'ê', 'î', 'ô', 'û', 'ŷ'])
         
         #Separate lists for words with the accents we want to detect and another one for all words without diacritics.
         self.words_with_diacritics = [word for word in fr_dict if contains_diacritics(word)]
