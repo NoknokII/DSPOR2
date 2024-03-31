@@ -4,13 +4,12 @@ import os
 import csv
 
 class ImageGenerator:
-    def __init__(self, font_folder="fonts", output_folder="images", image_dimensions=(500, 100), font_size=24,
+    def __init__(self, font_folder="fonts", output_folder="images", image_dimensions=(500, 100),
                  font_color=(255, 255, 255), maximum_noise_level = 150):
         self.output_folder = output_folder
         self.font_folder = font_folder
         self.image_dimensions = image_dimensions
         self.font_list = os.listdir(font_folder)
-        self.font_size = font_size
         self.font_color = font_color
         self.maximum_noise_level = maximum_noise_level
         self.initialize_dictionary()
