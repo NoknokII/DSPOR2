@@ -2,7 +2,6 @@ from PIL import Image, ImageDraw, ImageFont
 import random
 import os
 import csv
-import numpy
 
 class ImageGenerator:
     def __init__(self, font_folder="fonts", output_folder="images", image_dimensions=(500, 100), font_size=24,
@@ -26,10 +25,12 @@ class ImageGenerator:
         
         for _ in range(count_words_with_accents):
             random_word = random.choice(self.words_with_diacritics)
+            self.words_with_diacritics.remove(random_word)
             self.generate_new_image(random_word)
 
         for _ in range(count_words_without_diacritics):
             random_word = random.choice(self.words_without_diacritics)
+            self.words_without_diacritics.remove(random_word)
             self.generate_new_image(random_word)
 
     def generate_new_image(self, text):
@@ -60,9 +61,6 @@ class ImageGenerator:
         #Separate lists for words with the accents we want to detect and another one for all words without diacritics.
         self.words_with_diacritics = [word for word in fr_dict if contains_diacritics(word)]
         self.words_without_diacritics = [word for word in fr_dict if not contains_diacritics(word)]
-
-
-        #TODO define bounding boxes
 
     def add_noise(self, image, noise_factor ):
         width, height = image.size
