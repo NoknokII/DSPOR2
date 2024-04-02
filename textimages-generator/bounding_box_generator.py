@@ -14,8 +14,6 @@ class BboxGenerator:
                                 bbox_only_accent[1],
                                 bbox_only_accent[2] - self.adjust_right(bbox_only_accent, image), 
                                 bbox_only_accent[3] - self.adjust_bottom(bbox_only_accent, image)]
-        
-        draw.rectangle(bbox_accent_adjusted, outline="blue")
 
         character_class = self.retrieve_class(current_character)
 
