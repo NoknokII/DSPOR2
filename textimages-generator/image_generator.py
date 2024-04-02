@@ -1,10 +1,11 @@
 from PIL import Image, ImageDraw, ImageFont
+from bounding_box_generator import BboxGenerator
 import random
 import os
 import csv
 
 class ImageGenerator:
-    def __init__(self, font_folder="fonts", output_folder="images", image_dimensions=(500, 100),
+    def __init__(self, font_folder="fonts", output_folder="images", image_dimensions=(1000, 200),
                  font_color=(255, 255, 255), maximum_noise_level = 150):
         self.output_folder = output_folder
         self.font_folder = font_folder
@@ -34,8 +35,10 @@ class ImageGenerator:
 
     def generate_new_image(self, text):
 
+        bbox_generator = BboxGenerator()
+
         font_path = "fonts/" + random.choice(self.font_list)        
-        font = ImageFont.truetype(font_path, random.randint(20, 40))
+        font = ImageFont.truetype(font_path, random.randint(40, 80))
         image = Image.new("RGB", (self.image_dimensions[0], self.image_dimensions[1]), self.font_color).convert('L')
         draw = ImageDraw.Draw(image)
 
@@ -43,24 +46,32 @@ class ImageGenerator:
 
         draw.text(position, text, fill="black", font=font)
 
-        image = self.add_noise(image, random.randint(0, self.maximum_noise_level) / 300)
+        print(text)
 
-        image = image.convert("1")
+        for index, char in enumerate(text):
+            if(self.contains_diacritics(char)):
+                bbox_generator.draw_bounding_box(font, image, draw, text[:index], char)
 
-        image.save(self.output_folder+"/"+text+".tiff", compression="group4")
+        #image = self.add_noise(image, random.randint(0, self.maximum_noise_level) / 300)
+
+        #image = image.convert("1")
+
+        #image.save(self.output_folder+"/"+text+".tiff", compression="group4")
+        image.save(self.output_folder+"/"+text+".tiff")
 
     def initialize_dictionary(self):
         #Dictionary source: https://github.com/hbenbel/French-Dictionary/tree/master
         with open("dictionary.csv", "r", encoding="utf-8") as file:
             fr_dict = [word[0] for word in csv.reader(file)]
 
-        def contains_diacritics(word):
-            return any(accent in word for accent in  ['á', 'à', 'â', 'é', 'è', 'ê', 'î', 'ô', 'û', 'ŷ'])
         
         #Separate lists for words with the accents we want to detect and another one for all words without diacritics.
-        self.words_with_diacritics = [word for word in fr_dict if contains_diacritics(word)]
-        self.words_without_diacritics = [word for word in fr_dict if not contains_diacritics(word)]
+        self.words_with_diacritics = [word for word in fr_dict if self.contains_diacritics(word)]
+        self.words_without_diacritics = [word for word in fr_dict if not self.contains_diacritics(word)]
 
+    def contains_diacritics(self, word):
+        return any(accent in word for accent in  ['á', 'à', 'â', 'é', 'è', 'ê', 'î', 'ô', 'û', 'ŷ'])
+    
     def add_noise(self, image, noise_factor ):
         width, height = image.size
         grain = Image.new('L', (width, height))
