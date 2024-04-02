@@ -78,8 +78,8 @@ class ImageGenerator:
         x_center_normalised = x_center_in_pixels / self.image_dimensions[0]
         y_center_normalised = y_center_in_pixels / self.image_dimensions[1]
 
-        with open(self.output_folder + '/' +text + '.txt', 'w') as file:
-            file.write("%d %f %f %f %f" % (character_class, x_center_normalised, y_center_normalised, width_normalised, height_normalised))
+        with open(self.output_folder + '/' + text + '.txt', 'a') as file:
+            file.writelines("%d %f %f %f %f \n" % (character_class, x_center_normalised, y_center_normalised, width_normalised, height_normalised))
     
     def initialize_dictionary(self):
         #Dictionary source: https://github.com/hbenbel/French-Dictionary/tree/master

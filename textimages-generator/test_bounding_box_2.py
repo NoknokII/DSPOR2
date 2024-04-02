@@ -1,13 +1,13 @@
 import cv2
 
 # Load the image
-image = cv2.imread('textimages-generator\images\enteter.tiff')
+image = cv2.imread('textimages-generator/images/bathymetrie.tiff')
 
 # Get the dimensions of the image
 height, width, _ = image.shape
 
 # Define normalized coordinates (replace with your actual values)
-x_normalized, y_normalized, w_normalized, h_normalized = (0.113000, 0.152500, 0.030000, 0.065000) 
+x_normalized, y_normalized, w_normalized, h_normalized = (0.271500, 0.162500, 0.021000, 0.085000) 
 
 # Convert normalized coordinates to pixel values
 x = x_normalized * width

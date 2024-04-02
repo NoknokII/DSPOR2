@@ -25,9 +25,8 @@ class BboxGenerator:
 
     def adjust_left(self, bbox_accent, image):
         current_bbox_height = bbox_accent[3] - bbox_accent[1] 
-        current_bbox_width = bbox_accent[0] - bbox_accent[2] 
 
-        for x_offset in range(int(current_bbox_width)):
+        for x_offset in range(int(1000 - bbox_accent[0])):
             for y_offset in range(current_bbox_height):
                 pixel = image.getpixel((bbox_accent[0] + x_offset, bbox_accent[1] + y_offset))
                 if pixel == 0:
@@ -37,9 +36,8 @@ class BboxGenerator:
 
     def adjust_right(self, bbox_accent, image):
         current_bbox_height = bbox_accent[3] - bbox_accent[1] 
-        current_bbox_width = bbox_accent[0] - bbox_accent[2] 
 
-        for x_offset in range(int(current_bbox_width)):
+        for x_offset in range(int(bbox_accent[2])):
             for y_offset in range(current_bbox_height):
                 pixel = image.getpixel((bbox_accent[2] - x_offset, bbox_accent[1] + y_offset))
                 if pixel == 0:
