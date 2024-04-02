@@ -1,21 +1,27 @@
 class BboxGenerator:
-    def draw_bounding_box(self, font, image, draw, text_until_current_char, current_character):
+    def generate_bounding_box(self, font, image, draw, text_until_current_char, current_character):
         base_character = self.retrieve_base_character(current_character)
         current_character_coordinates = (5 + font.getlength(text_until_current_char) , 5)
         bbox_base_character = draw.textbbox(current_character_coordinates, base_character, font = font)
         bbox_accent = draw.textbbox(current_character_coordinates, current_character, font=font)
+
         bbox_only_accent = [bbox_accent[0], 
                                 bbox_accent[1], 
                                 bbox_accent[2], 
                                 bbox_accent[3] - (bbox_base_character[3] - bbox_base_character[1])]
-        
 
         bbox_accent_adjusted = [bbox_only_accent[0] + self.adjust_left(bbox_only_accent, image), 
                                 bbox_only_accent[1],
                                 bbox_only_accent[2] - self.adjust_right(bbox_only_accent, image), 
                                 bbox_only_accent[3] - self.adjust_bottom(bbox_only_accent, image)]
-
+        
         draw.rectangle(bbox_accent_adjusted, outline="blue")
+
+        character_class = self.retrieve_class(current_character)
+
+        return character_class, bbox_accent_adjusted
+        
+
 
     def adjust_left(self, bbox_accent, image):
         current_bbox_height = bbox_accent[3] - bbox_accent[1] 
@@ -65,3 +71,12 @@ class BboxGenerator:
                 return 'u'
             case 'ŷ':
                 return 'y'
+            
+    def retrieve_class(self, current_character):
+        match current_character:
+            case 'á' | 'é':
+                return 0
+            case 'à' | 'è':
+                return 1
+            case 'â'| 'ê'| 'î' | 'ô' | 'û' | 'ŷ':
+                return 2

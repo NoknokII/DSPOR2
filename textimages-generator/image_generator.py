@@ -25,11 +25,15 @@ class ImageGenerator:
         
         for _ in range(count_words_with_accents):
             random_word = random.choice(self.words_with_diacritics)
+            if(len(random_word) > 30):
+                continue
             self.words_with_diacritics.remove(random_word)
             self.generate_new_image(random_word)
 
         for _ in range(count_words_without_diacritics):
             random_word = random.choice(self.words_without_diacritics)
+            if(len(random_word) > 30):
+                continue
             self.words_without_diacritics.remove(random_word)
             self.generate_new_image(random_word)
 
@@ -48,17 +52,35 @@ class ImageGenerator:
 
         print(text)
 
+        bounding_boxes = []
+
         for index, char in enumerate(text):
             if(self.contains_diacritics(char)):
-                bbox_generator.draw_bounding_box(font, image, draw, text[:index], char)
+                bounding_boxes.append(bbox_generator.generate_bounding_box(font, image, draw, text[:index], char))
 
-        #image = self.add_noise(image, random.randint(0, self.maximum_noise_level) / 300)
+        for (character_class,  bounding_box) in bounding_boxes:
+            self.write_to_yolo_text_file(character_class, bounding_box, text)
 
-        #image = image.convert("1")
+        image = self.add_noise(image, random.randint(0, self.maximum_noise_level) / 300)
 
-        #image.save(self.output_folder+"/"+text+".tiff", compression="group4")
-        image.save(self.output_folder+"/"+text+".tiff")
+        image = image.convert("1")
 
+        image.save(self.output_folder+"/"+text+".tiff", compression="group4")
+        
+    def write_to_yolo_text_file(self, character_class, bbox_accent_adjusted, text):
+        width_in_pixels = bbox_accent_adjusted[2] - bbox_accent_adjusted[0]
+        height_in_pixels = bbox_accent_adjusted[3] - bbox_accent_adjusted[1]
+        x_center_in_pixels = bbox_accent_adjusted[0] + width_in_pixels / 2
+        y_center_in_pixels = bbox_accent_adjusted[1] + height_in_pixels / 2
+
+        width_normalised = width_in_pixels / self.image_dimensions[0]
+        height_normalised = height_in_pixels / self.image_dimensions[1]
+        x_center_normalised = x_center_in_pixels / self.image_dimensions[0]
+        y_center_normalised = y_center_in_pixels / self.image_dimensions[1]
+
+        with open(self.output_folder + '/' +text + '.txt', 'w') as file:
+            file.write("%d %f %f %f %f" % (character_class, x_center_normalised, y_center_normalised, width_normalised, height_normalised))
+    
     def initialize_dictionary(self):
         #Dictionary source: https://github.com/hbenbel/French-Dictionary/tree/master
         with open("dictionary.csv", "r", encoding="utf-8") as file:
@@ -70,7 +92,7 @@ class ImageGenerator:
         self.words_without_diacritics = [word for word in fr_dict if not self.contains_diacritics(word)]
 
     def contains_diacritics(self, word):
-        return any(accent in word for accent in  ['á', 'à', 'â', 'é', 'è', 'ê', 'î', 'ô', 'û', 'ŷ'])
+        return any(accent in word for accent in  ['á', 'à', 'â', 'é', 'è', 'ê', 'ô', 'û', 'ŷ'])
     
     def add_noise(self, image, noise_factor ):
         width, height = image.size

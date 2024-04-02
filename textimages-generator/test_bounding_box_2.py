@@ -1,18 +1,24 @@
-from PIL import Image, ImageDraw, ImageFont
-from bounding_box_generator import BboxGenerator
+import cv2
 
-width, height = 400, 200
-image = Image.new("RGB", (width, height), "white")
-draw = ImageDraw.Draw(image)
+# Load the image
+image = cv2.imread('textimages-generator\images\enteter.tiff')
 
-font_size = 150
-font = ImageFont.truetype('textimages-generator/fonts/LoveDays-2v7Oe.ttf', font_size)
+# Get the dimensions of the image
+height, width, _ = image.shape
 
-text = "abîma"
+# Define normalized coordinates (replace with your actual values)
+x_normalized, y_normalized, w_normalized, h_normalized = (0.113000, 0.152500, 0.030000, 0.065000) 
 
-# Draw the text
-imageDraw = draw.text((5, 5), text, fill="black", font=font)
+# Convert normalized coordinates to pixel values
+x = x_normalized * width
+y = y_normalized * height
+w = w_normalized * width
+h = h_normalized * height
 
-bbox_generator =  BboxGenerator()
+# Draw the bounding box
+cv2.rectangle(image, (int(x - w / 2), int(y - h / 2)), (int(x + w / 2), int(y + h / 2)), (0, 255, 0), 2)  # Green color, thickness = 2
 
-bbox_generator.draw_bounding_box(font, image, draw, 'abî', 'î')
+# Display the image with the bounding box
+cv2.imshow('Bounding Box', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
