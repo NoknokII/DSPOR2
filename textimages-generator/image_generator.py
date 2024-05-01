@@ -5,14 +5,12 @@ import os
 import csv
 
 class ImageGenerator:
-    def __init__(self, font_folder="fonts", output_folder="images", image_dimensions=(1000, 200),
-                 font_color=(255, 255, 255), maximum_noise_level = 150):
+    def __init__(self, font_folder="fonts", output_folder="images",
+                 font_color=(255, 255, 255)):
         self.output_folder = output_folder
         self.font_folder = font_folder
-        self.image_dimensions = image_dimensions
         self.font_list = os.listdir(font_folder)
         self.font_color = font_color
-        self.maximum_noise_level = maximum_noise_level
         self.initialize_dictionary()
 
     def build_folders(self):
@@ -21,8 +19,10 @@ class ImageGenerator:
         if not os.path.exists(self.font_folder):
             os.makedirs(self.font_folder)
 
-    def generate_images(self, count_words_with_accents, count_words_without_diacritics):
+    def generate_images(self, count_words_with_accents, count_words_without_diacritics, maximum_noise_level):
         
+        self.maximum_noise_level = maximum_noise_level
+
         for _ in range(count_words_with_accents):
             random_word = random.choice(self.words_with_diacritics)
             if(len(random_word) > 30):
@@ -39,14 +39,21 @@ class ImageGenerator:
 
     def generate_new_image(self, text):
 
+
         bbox_generator = BboxGenerator()
 
         font_path = "fonts/" + random.choice(self.font_list)        
         font = ImageFont.truetype(font_path, random.randint(40, 80))
-        image = Image.new("RGB", (self.image_dimensions[0], self.image_dimensions[1]), self.font_color).convert('L')
+
+        ascent, descent = font.getmetrics()
+        text_width = font.getmask(text).getbbox()[2]
+        text_height = font.getmask(text).getbbox()[3] + descent
+
+        self.image_dimensions = (text_width + 10, text_height + 15)
+        image = Image.new("RGB", (self.image_dimensions[0] + 10, self.image_dimensions[1]), self.font_color).convert('L')
         draw = ImageDraw.Draw(image)
 
-        position = (5, 5)
+        position = (5, 2)
 
         draw.text(position, text, fill="black", font=font)
 
