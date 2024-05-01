@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from bounding_box_generator import BboxGenerator
 import random
 import os
@@ -19,9 +19,12 @@ class ImageGenerator:
         if not os.path.exists(self.font_folder):
             os.makedirs(self.font_folder)
 
-    def generate_images(self, count_words_with_accents, count_words_without_diacritics, maximum_noise_level):
+    def generate_images(self, count_words_with_accents, count_words_without_diacritics, maximum_noise_level, maximum_scanning_lines, scanning_line_probability):
         
         self.maximum_noise_level = maximum_noise_level
+        self.maximum_scanning_lines = maximum_scanning_lines
+        self.scanning_line_probability = scanning_line_probability
+
 
         for _ in range(count_words_with_accents):
             random_word = random.choice(self.words_with_diacritics)
@@ -68,7 +71,9 @@ class ImageGenerator:
         for (character_class,  bounding_box) in bounding_boxes:
             self.write_to_yolo_text_file(character_class, bounding_box, text)
 
-        image = self.add_noise(image, random.randint(0, self.maximum_noise_level) / 300)
+        image = self.add_noise(image, self.maximum_noise_level)
+
+        image = self.simulate_scanning_artifacts(image)
 
         image = image.convert("1")
 
@@ -95,21 +100,54 @@ class ImageGenerator:
 
         
         #Separate lists for words with the accents we want to detect and another one for all words without diacritics.
-        self.words_with_diacritics = [word for word in fr_dict if self.contains_diacritics(word)]
-        self.words_without_diacritics = [word for word in fr_dict if not self.contains_diacritics(word)]
+        self.words_with_diacritics = [word for word in fr_dict if self.contains_diacritics(word) and not self.has_multiple_words(word)]
+        self.words_without_diacritics = [word for word in fr_dict if not self.contains_diacritics(word) and not self.has_multiple_words(word)]
 
     def contains_diacritics(self, word):
         return any(accent in word for accent in  ['á', 'à', 'â', 'é', 'è', 'ê', 'ô', 'û', 'ŷ'])
     
+    def has_multiple_words(self, input_string):
+        space_count = input_string.count(' ')
+        return space_count >= 1
+    
     def add_noise(self, image, noise_factor ):
+        draw = ImageDraw.Draw(image)
         width, height = image.size
-        grain = Image.new('L', (width, height))
+        for y in range(height):
+            for x in range(width):
+                if random.random() < 0.00001 * noise_factor:
+                    splotch_size = random.randint(2, 10)
+                    splotch_color = random.randint(0, 50)
+                    # Random eccentricity
+                    eccentricity = random.uniform(0.3, 1.0)
+                    # Random rotation
+                    rotation = random.uniform(0, 360)
+                    # Calculate bounding box
+                    bbox = (x - splotch_size, y - int(splotch_size * eccentricity), 
+                            x + splotch_size, y + int(splotch_size * eccentricity))
+                    # Draw ellipse
+                    draw.ellipse(bbox, fill=splotch_color, outline=None)
+        return image
+    
+    def simulate_scanning_artifacts(self, image):
+        num_lines_affected = random.randint(0, self.maximum_scanning_lines)
 
-        for x in range(width):
-            for y in range(height):
-                grain_level_adjusted = int(random.uniform(-255 * noise_factor, 255 * noise_factor))
-                pixel_value = image.getpixel((x, y))
-                new_pixel_value = max(0, min(255, pixel_value + grain_level_adjusted))
-                grain.putpixel((x, y), new_pixel_value)
+        image = image.filter(ImageFilter.GaussianBlur(radius=random.randint(0, 1)))
 
-        return Image.blend(image, grain.convert('L'), alpha=noise_factor)
+        draw = ImageDraw.Draw(image)
+        width, height = image.size
+        num_lines = random.randint(5, 10)
+        for _ in range(num_lines):
+            y = random.randint(0, height)
+            if num_lines_affected > 0 and random.random() < self.scanning_line_probability:
+                line_fill = random.randint(200, 255)
+                draw.line((0, y, width, y), fill=line_fill, width=random.randint(1, 3))
+
+                # Introduce noise in the lines
+                line_noise = random.randint(0, 20)
+                for x in range(width):
+                    if random.random() < 0.5:
+                        draw.point((x, y), fill=min(255, line_fill + random.randint(-line_noise, line_noise)))
+                num_lines_affected -= 1
+
+        return image
