@@ -45,7 +45,7 @@ class ImageGenerator:
         font_path = "fonts/" + random.choice(self.font_list)        
         font = ImageFont.truetype(font_path, random.randint(40, 80))
 
-        ascent, descent = font.getmetrics()
+        _, descent = font.getmetrics()
         text_width = font.getmask(text).getbbox()[2]
         text_height = font.getmask(text).getbbox()[3] + descent
 
