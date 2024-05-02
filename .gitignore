@@ -3,3 +3,6 @@
 **/.idea/
 **/.idea/*
 /textimages-generator/images/
+/classifier/Model/datasets/*
+/classifier/Model/DSPRO2/*
+/classifier/Model/wandb/*
