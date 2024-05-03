@@ -12,6 +12,8 @@ class ImageGenerator:
         self.font_list = os.listdir(font_folder)
         self.font_color = font_color
         self.initialize_dictionary()
+        self.offset_x = 5
+        self.offset_y = 2
 
     def build_folders(self):
         if not os.path.exists(self.output_folder):
@@ -42,21 +44,21 @@ class ImageGenerator:
 
     def generate_new_image(self, text):
 
-
+        #A font is often measured in pt (points). Points dictate the height of the lettering. There are approximately 72 (72.272) pt in one inch.
         bbox_generator = BboxGenerator()
 
         font_path = "fonts/" + random.choice(self.font_list)        
-        font = ImageFont.truetype(font_path, random.randint(40, 80))
+        font = ImageFont.truetype(font_path, random.randint(int(11*(200/72)), int(13*(200/72))))
 
         _, descent = font.getmetrics()
         text_width = font.getmask(text).getbbox()[2]
         text_height = font.getmask(text).getbbox()[3] + descent
 
         self.image_dimensions = (text_width + 10, text_height + 15)
-        image = Image.new("RGB", (self.image_dimensions[0] + 10, self.image_dimensions[1]), self.font_color).convert('L')
-        draw = ImageDraw.Draw(image)
+        image = Image.new("1", (self.image_dimensions[0] + 10, self.image_dimensions[1]), 1)
+        draw = ImageDraw.Draw(image, mode="1")
 
-        position = (5, 2)
+        position = (self.offset_x, self.offset_y)
 
         draw.text(position, text, fill="black", font=font)
 
@@ -66,32 +68,26 @@ class ImageGenerator:
 
         for index, char in enumerate(text):
             if(self.contains_diacritics(char)):
-                bounding_boxes.append(bbox_generator.generate_bounding_box(font, image, draw, text[:index], char))
+                bounding_boxes.append(bbox_generator.generate_bounding_box(font, image, text[:index], char, self.offset_x))
 
         for (character_class,  bounding_box) in bounding_boxes:
             self.write_to_yolo_text_file(character_class, bounding_box, text)
+        # Create empty file for non text with no lbl
+        if len(bounding_boxes) == 0:
+            open(self.output_folder + '/' + text + '.txt', 'a').close()
 
         image = self.add_noise(image, self.maximum_noise_level)
 
-        image = self.simulate_scanning_artifacts(image)
+        #TODO fixing this. We cant use GaussianBlur on a BW image.
+        #image = self.simulate_scanning_artifacts(image)
 
-        image = image.convert("1")
 
-        image.save(self.output_folder+"/"+text+".tiff", compression="group4")
+        image.save(self.output_folder+"/"+text+".tiff", compression="group4", dpi=(200, 200))
         
-    def write_to_yolo_text_file(self, character_class, bbox_accent_adjusted, text):
-        width_in_pixels = bbox_accent_adjusted[2] - bbox_accent_adjusted[0]
-        height_in_pixels = bbox_accent_adjusted[3] - bbox_accent_adjusted[1]
-        x_center_in_pixels = bbox_accent_adjusted[0] + width_in_pixels / 2
-        y_center_in_pixels = bbox_accent_adjusted[1] + height_in_pixels / 2
-
-        width_normalised = width_in_pixels / self.image_dimensions[0]
-        height_normalised = height_in_pixels / self.image_dimensions[1]
-        x_center_normalised = x_center_in_pixels / self.image_dimensions[0]
-        y_center_normalised = y_center_in_pixels / self.image_dimensions[1]
+    def write_to_yolo_text_file(self, character_class, bbox, text):
 
         with open(self.output_folder + '/' + text + '.txt', 'a') as file:
-            file.writelines("%d %f %f %f %f \n" % (character_class, x_center_normalised, y_center_normalised, width_normalised, height_normalised))
+            file.writelines("%d %f %f %f %f \n" % (character_class, bbox[0], bbox[1],bbox[2],bbox[3]))
     
     def initialize_dictionary(self):
         #Dictionary source: https://github.com/hbenbel/French-Dictionary/tree/master
@@ -104,7 +100,7 @@ class ImageGenerator:
         self.words_without_diacritics = [word for word in fr_dict if not self.contains_diacritics(word) and not self.has_multiple_words(word)]
 
     def contains_diacritics(self, word):
-        return any(accent in word for accent in  ['á', 'à', 'â', 'é', 'è', 'ê', 'ô', 'û', 'ŷ'])
+        return any(accent in word for accent in ['á', 'à', 'â', 'é', 'è', 'ê', 'ô', 'û', 'ŷ'])
     
     def has_multiple_words(self, input_string):
         space_count = input_string.count(' ')
