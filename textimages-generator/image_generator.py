@@ -96,8 +96,8 @@ class ImageGenerator:
 
         
         #Separate lists for words with the accents we want to detect and another one for all words without diacritics.
-        self.words_with_diacritics = [word for word in fr_dict if self.contains_diacritics(word) and not self.has_multiple_words(word)]
-        self.words_without_diacritics = [word for word in fr_dict if not self.contains_diacritics(word) and not self.has_multiple_words(word)]
+        self.words_with_diacritics = [word for word in fr_dict if self.contains_diacritics(word) and not self.has_multiple_words(word) and '/' not in word]
+        self.words_without_diacritics = [word for word in fr_dict if not self.contains_diacritics(word) and not self.has_multiple_words(word) and '/' not in word]
 
     def contains_diacritics(self, word):
         return any(accent in word for accent in ['á', 'à', 'â', 'é', 'è', 'ê', 'ô', 'û', 'ŷ'])
